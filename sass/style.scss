@@ -1,0 +1,51 @@
+@import "compass";
+
+body{
+    background: #f3f3f3;
+}
+
+.breeze {
+    height:250px;
+    width:250px;
+    margin: 0 auto;
+    text-align: center;
+    -webkit-perspective: 1400px;
+    -moz-perspective: 1400px;
+    -ms-perspective: 1400px;
+    -o-perspective: 1400px;
+    perspective: 1400px;
+
+}
+
+.breeze li {
+    display: block;
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    border: 1px solid #000;
+    background: #fff;
+    display: none;
+    -webkit-transition: -webkit-transform 600ms ease, opacity 600ms ease, left 600ms ease, top 600ms ease;
+    -moz-transition: -moz-transform 600ms ease, opacity 600ms ease, left 600ms ease, top 600ms ease;
+    -o-transition: -o-transform 600ms ease, opacity 600ms ease, left 600ms ease, top 600ms ease;
+    -ms-transition: -ms-transform 600ms ease, opacity 600ms ease, left 600ms ease, top 600ms ease;
+    transition: transform 600ms ease, opacity 600ms ease, left 600ms ease, top 600ms ease;
+}
+
+.breeze li.active{
+    z-index: 10;
+    display: block;
+}
+
+.breeze li.active + li{
+    display: block;
+    z-index: 8;
+}
+
+.breeze li.active + li.active{
+    display: block;
+    z-index: 9;
+}
+
+
+/* END required styles */
