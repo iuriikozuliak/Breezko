@@ -1,18 +1,18 @@
 /*
- * Swipe 2.0
+ * Breezko 0.1
  *
- * Brad Birdsall
+ * Iurii Kozuliak
  * Copyright 2013, MIT License
  *
  */
 
-var Breeze = function(container, options) {
+(function (window) {
+
 
     "use strict";
 
-    // utilities
     var noop = function () {
-    }; // simple no operation function
+    };
     var offloadFn = function (fn) {
         setTimeout(fn || noop, 0)
     }; // offload a functions execution
@@ -25,320 +25,265 @@ var Breeze = function(container, options) {
             var props = ['transitionProperty', 'WebkitTransition', 'MozTransition', 'OTransition', 'msTransition'];
             for (var i in props) if (temp.style[ props[i] ] !== undefined) return true;
             return false;
-        })(document.createElement('swipe'))
+        })
     };
 
-    // quit if no root element
-    if (!container) return;
-    var element = container;
-    var slides, slidePos, width, length, pagButtons;
-    options = options || {};
-    var index = parseInt(options.startSlide, 10) || 0;
-    var speed = options.speed || 700;
-    options.continuous = options.continuous !== undefined ? options.continuous : true;
+    function extend(a, b) {
+        for (var key in b) {
+            if (b.hasOwnProperty(key)) {
+                a[key] = b[key];
+            }
+        }
+        return a;
+    }
 
-    function setup() {
+    function Breezko(container, options) {
+        this.container = container;
+        this.options = extend(this.defaults, options);
+        this._init();
+    }
 
-        // cache slides
-        slides = element.children;
-        length = slides.length;
+    Breezko.prototype = {
+        defaults:{
+            speed:500,
+            startSlide:'',
+            auto:false,
+            limits:{
+                'rotateX':0,
+                'rotateY':0,
+                'rotateZ':0,
+                'translateX':0,
+                'translateY':0,
+                'translateZ':0
+            }
+        },
+        _init:function () {
 
-        // set continuous to false if only one slide
-        if (slides.length < 2) options.continuous = false;
+            this.index = 0;
+            // cache slides
 
-        // create an array to store current positions of each slide
-        slidePos = new Array(slides.length);
+            this.returnMode = 1;
 
-        // stack elements
-        var pos = slides.length;
+            this.slides = this.container.children;
+            this.length = this.slides.length;
 
-        slides[0].className += ' active';
 
-        console.log(slides);
+            // stack elements
 
-        while (pos--) {
+            this.slides[0].className += ' active';
 
-            var slide = slides[pos];
+            this._resetzIndex();
 
-            slide.setAttribute('data-index', pos);
+            if (this.options.delay) this._begin();
+
+            if (browser.addEventListener) {
+
+                if (browser.transitions) {
+                    this.container.addEventListener('webkitTransitionEnd', this._events, false);
+                    this.container.addEventListener('msTransitionEnd', this._events, false);
+                    this.container.addEventListener('oTransitionEnd', this._events, false);
+                    this.container.addEventListener('otransitionend', this._events, false);
+                    this.container.addEventListener('transitionend', this, false);
+                }
+
+
+            } else {
+
+//                window.onresize = function () {
+//                    this._init();
+//                };
+            }
+        },
+        _goTo:function (to) {
+
+            if (this.index == to) return;
 
             if (browser.transitions) {
 
+                var direction = Math.abs(this.index - to) / (this.index - to); // 1: backward, -1: forward
+                var diff = Math.abs(this.index - to) - 1;
+
+                to = this._circle(to);
+
+                var targetSlide = this.slides[to],
+                    currentSlide = this.slides[this.index];
+
+                targetSlide.className += ' active';
+                currentSlide.setAttribute('data-direction', direction);
+
+                this._blow(this.index, direction);
+
             }
-        }
 
-        // reposition elements before and after index
-        if (options.continuous && browser.transitions) {
+            this.index = to;
 
-        }
+            if(to == 0 && this.returnMode === 1 && direction === -1 ){
+                this.returnMode = -1;
+            }
+            else  if(to == 0 && this.returnMode === -1 && direction === -1 ){
+                this.returnMode = 1;
+                this._resetzIndex();
+            }
 
-    }
+            offloadFn(this.options.callback && this.options.callback(this.index, this.slides[index]));
 
-    function goTo(to, speed) {
-
-
-        // do nothing if already on requested slide
-        if (index == to) return;
-
-        if (browser.transitions) {
-
-            var direction = Math.abs(index - to) / (index - to); // 1: backward, -1: forward
-
-            var diff = Math.abs(index - to) - 1;
-
-            to = circle(to);
-            slides[to].className += ' active';
-            blow(index, speed);
-
-        }
-
-        index = to;
-        offloadFn(options.callback && options.callback(index, slides[index]));
-
-    }
-
-    function next() {
-
-        if (options.continuous) goTo(index + 1);
-        else if (index < slides.length - 1) slideTo(index + 1);
-
-    }
-
-    function circle(index) {
-
-        // a simple positive modulo using slides.length
-        return (slides.length + (index % slides.length)) % slides.length;
-
-    }
-
-    function blow(index, speed) {
-
-        var slide = slides[index];
-
-        var transformVal = getTransform();
-        var transformStyle = 'translateX(' + transformVal.tx + 'px) translateY(' + transformVal.ty + 'px) translateZ(' + transformVal.tz + 'px) rotateX(' + transformVal.rx + 'deg) rotateY(' + transformVal.ry + 'deg) rotateZ(' + transformVal.rz + 'deg)';
-
-        setTransform(slide, transformStyle);
-
-    }
-
-    function setTransform(slide, transformStyle){
-
-        var style = slide && slide.style;
-
-        style.webkitTransitionDuration =
-            style.MozTransitionDuration =
-                style.msTransitionDuration =
-                    style.OTransitionDuration =
-                        style.transitionDuration = speed + 'ms';
-
-        style.webkitTransform =
-            style.msTransform =
-                style.MozTransform =
-                    style.OTransform = transformStyle;
-    }
+        },
 
 
-    function getRandom(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
 
-    function getTransform() {
-        return {
-            rx:getRandom(100, 100),
-            ry:getRandom(-10, -10),
-            rz:getRandom(-10, 10),
-            tx:getRandom(-100, 100),
-            ty:getRandom(-200, -200),
-            tz:getRandom(-100, 100)
-        }
-    }
+        _next:function () {
 
-    function resetTransform() {
-        return 'translateX(0px) translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)';
-    }
+           this._goTo(this.index + 1);
 
+        },
 
-// setup auto slideshow
-    var delay = options.auto || 0;
-    var interval;
+        _prev:function () {
+           if(this.index > 0) this._goTo(this.index - 1);
+        },
 
-    function begin() {
+        _circle:function (index) {
 
-        interval = setTimeout(next, delay);
+            // a simple positive modulo using length
+            return (this.length + (index % this.length)) % this.length;
 
-    }
+        },
 
-    function stop() {
+        _blow:function (index, direction) {
+            var transformVal = this._getTransform();
+            var transformStyle = 'translateX(' + transformVal.tx + 'px) translateY(' + transformVal.ty + 'px) translateZ(' + transformVal.tz + 'px) rotateX(' + transformVal.rx + 'deg) rotateY(' + transformVal.ry + 'deg) rotateZ(' + transformVal.rz + 'deg)';
 
-        delay = 0;
-        clearTimeout(interval);
+            if(direction === 1){
+                var slide = this.slides[index - 1];
 
-    }
+                this._blowAway(slide, transformStyle, -this.returnMode);
+            }
+            else{
+                var slide = this.slides[index];
+                this._blowAway(slide, transformStyle, this.returnMode);
+            }
 
 
-// setup event capturing
-    var events = {
+        },
 
+        _blowAway: function(slide, transformStyle, mode){
+
+            slide.style.visibility = 'visible';
+            slide.style.zIndex = this.length + 1 + this.index * -this.returnMode;
+
+            mode == 1? this._setTransform(slide, transformStyle) : this._setTransform(slide);
+
+        },
+
+
+        _resetzIndex : function(){
+            var pos = this.slides.length;
+
+            while (pos--) {
+
+                var slide = this.slides[pos];
+
+                slide.setAttribute('data-index', pos);
+                slide.style.zIndex = this.length - pos
+            }
+        },
+
+        _setTransform:function (slide, transformStyle, speed) {
+            var style = slide && slide.style;
+            var speed = speed || this.options.speed;
+
+            var opacity = (transformStyle) ? 0 : 1;
+
+            slide.style.opacity = opacity;
+
+            var transformStyle = transformStyle || "translateX(0px) translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)";
+
+
+            style.webkitTransitionDuration =
+                style.MozTransitionDuration =
+                    style.msTransitionDuration =
+                        style.OTransitionDuration =
+                            style.transitionDuration = speed + 'ms';
+
+            style.webkitTransform =
+                style.msTransform =
+                    style.MozTransform =
+                        style.OTransform = transformStyle;
+
+        },
+        _getRandom:function (min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        },
+
+        _getTransform:function () {
+            return {
+                rx:this._getRandom(100, 100),
+                ry:this._getRandom(-10, -10),
+                rz:this._getRandom(-10, 10),
+                tx:this._getRandom(-400, 400),
+                ty:this._getRandom(-300, 300),
+                tz:this._getRandom(350, 500)
+            }
+        },
+        _begin:function () {
+
+            this.interval = setTimeout(next, this.options.delay || 0);
+        },
+
+        _stop:function () {
+
+            this.delay = 0;
+            clearTimeout(this.interval);
+
+        },
         handleEvent:function (event) {
 
             switch (event.type) {
-                case 'touchstart':
-                    this.start(event);
-                    break;
-                case 'touchmove':
-                    this.blow(event);
-                    break;
-                case 'touchend':
-                    offloadFn(this.end(event));
-                    break;
                 case 'webkitTransitionEnd':
                 case 'msTransitionEnd':
                 case 'oTransitionEnd':
                 case 'otransitionend':
                 case 'transitionend':
-                    offloadFn(this.transitionEnd(event));
-                    break;
-                case 'resize':
-                    offloadFn(setup.call());
+                    offloadFn(this._transitionEnd(event));
                     break;
             }
 
-            if (options.stopPropagation) event.stopPropagation();
+            if (this.options.stopPropagation) event.stopPropagation();
 
         },
-        transitionEnd:function (event) {
+        _transitionEnd:function (event) {
 
-            event.target.className = event.target.className.replace(/(?:^|\s)active(?!\S)/g, '')
+            var slide = event.target;
 
-            setTransform(event.target, resetTransform());
+            slide.className = slide.className.replace(/(?:^|\s)active(?!\S)/g, '');
+            if(slide.style.opacity == 0)
+                slide.style.visibility = 'hidden';
 
-            if (parseInt(event.target.getAttribute('data-index'), 10) == index) {
-
-                if (delay) begin();
-
-                options.transitionEnd && options.transitionEnd.call(event, index, slides[index]);
-
+            if (parseInt(event.target.getAttribute('data-index'), 10) == this.index) {
+                this.options.transitionEnd && this.options.transitionEnd.call(event, this.index, this.slides[this.index]);
             }
-
-        }
-
-    }
-
-// trigger setup
-    setup();
-
-// start auto slideshow if applicable
-    if (delay) begin();
-
-
-// add event listeners
-    if (browser.addEventListener) {
-
-        // set touchstart event on element
-        if (browser.touch) element.addEventListener('touchstart', events, false);
-
-        if (browser.transitions) {
-            element.addEventListener('webkitTransitionEnd', events, false);
-            element.addEventListener('msTransitionEnd', events, false);
-            element.addEventListener('oTransitionEnd', events, false);
-            element.addEventListener('otransitionend', events, false);
-            element.addEventListener('transitionend', events, false);
-        }
-
-        // set resize event on window
-        window.addEventListener('resize', events, false);
-
-    } else {
-
-        window.onresize = function () {
-            setup()
-        }; // to play nice with old IE
-
-    }
-
-// expose the Swipe API
-    return {
-        setup:function () {
-
-            setup();
-
         },
         next:function () {
 
-            next();
+            this._next();
 
         },
-        slideTo:function (to, speed, event) {
+        prev:function () {
 
-            // cancel slideshow
-            stop();
-
-            slideTo(to, speed, event);
-
-        },
-        getPos:function () {
-
-            // return current index position
-            return index;
-
-        },
-        getNumSlides:function () {
-
-            // return total number of slides
-            return length;
-        },
-        kill:function () {
-
-            // cancel slideshow
-            stop();
-
-            // reset element
-            element.style.width = 'auto';
-            element.style.left = 0;
-
-            // reset slides
-            var pos = slides.length;
-            while (pos--) {
-
-                var slide = slides[pos];
-                slide.style.width = '100%';
-                slide.style.left = 0;
-
-
-            }
-
-            // removed event listeners
-            if (browser.addEventListener) {
-
-                // remove current event listeners
-                element.removeEventListener('touchstart', events, false);
-                element.removeEventListener('webkitTransitionEnd', events, false);
-                element.removeEventListener('msTransitionEnd', events, false);
-                element.removeEventListener('oTransitionEnd', events, false);
-                element.removeEventListener('otransitionend', events, false);
-                element.removeEventListener('transitionend', events, false);
-                window.removeEventListener('resize', events, false);
-
-            }
-            else {
-
-                window.onresize = null;
-
-            }
+            this._prev();
 
         }
     }
 
-}
 
+    window.Breezko = Breezko;
 
-if (window.jQuery || window.Zepto) {
-    (function ($) {
-        $.fn.Breeze = function (params) {
-            return this.each(function () {
-                $(this).data('Breeze', new Breeze($(this)[0], params));
-            });
-        }
-    })(window.jQuery || window.Zepto)
-}
+//    if (window.jQuery || window.Zepto) {
+//        (function ($) {
+//            $.fn.Breeze = function (params) {
+//                return this.each(function () {
+//                    $(this).data('Breeze', new Breeze($(this)[0], params));
+//                });
+//            }
+//        })(window.jQuery || window.Zepto)
+//    }
+})(window);
