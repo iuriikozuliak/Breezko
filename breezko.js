@@ -129,12 +129,8 @@
 
         },
 
-
-
         _next:function () {
-
            this._goTo(this.index + 1);
-
         },
 
         _prev:function () {
@@ -226,7 +222,9 @@
         },
         _begin:function () {
 
-            this.interval = setTimeout(next, this.options.delay || 0);
+            var self = this;
+
+            this.interval = setInterval(function(){self._next()}, this.options.delay || 0);
         },
 
         _stop:function () {
@@ -261,6 +259,7 @@
             if (parseInt(event.target.getAttribute('data-index'), 10) == this.index) {
                 this.options.transitionEnd && this.options.transitionEnd.call(event, this.index, this.slides[this.index]);
             }
+
         },
         next:function () {
 
