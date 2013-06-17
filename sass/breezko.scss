@@ -1,8 +1,5 @@
 @import "compass";
 
-body{
-}
-
 .breeze {
     @include perspective(1400px);
 
@@ -27,7 +24,6 @@ body{
 }
 
 .breeze li.active{
-
     display: block;
 }
 

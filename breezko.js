@@ -108,22 +108,21 @@
                 var targetSlide = this.slides[to],
                     currentSlide = this.slides[this.index];
 
-                targetSlide.className += ' active';
-                currentSlide.setAttribute('data-direction', direction);
-
                 this._blow(this.index, direction);
 
             }
 
             this.index = to;
 
-            if(to == 0 && this.returnMode === 1 && direction === -1 ){
+            if (to == 0 && this.returnMode === 1 && direction === -1 ){
                 this.returnMode = -1;
             }
             else  if(to == 0 && this.returnMode === -1 && direction === -1 ){
                 this.returnMode = 1;
-                this._resetzIndex();
             }
+
+            this._resetzIndex();
+
 
             offloadFn(this.options.callback && this.options.callback(this.index, this.slides[index]));
 
@@ -164,7 +163,6 @@
         _blowAway: function(slide, transformStyle, mode){
 
             slide.style.visibility = 'visible';
-            slide.style.zIndex = this.length + 1 + this.index * -this.returnMode;
 
             mode == 1? this._setTransform(slide, transformStyle) : this._setTransform(slide);
 
@@ -179,7 +177,7 @@
                 var slide = this.slides[pos];
 
                 slide.setAttribute('data-index', pos);
-                slide.style.zIndex = this.length - pos
+                slide.style.zIndex = this.length - pos * this.returnMode;
             }
         },
 
