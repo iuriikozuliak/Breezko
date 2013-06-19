@@ -25,32 +25,41 @@
 <![endif]-->
 
 <div class="navbar" ng-controller="MainCtrl">
-    <a class="logo" href="#"></a>
+    <a class="logo" href="http://ikozuliak.com"></a>
     <nav>
         <ul>
-            <li><a href="#/">home</a></li>
+            <li><a href="http://ikozuliak.com">home</a></li>
         </ul>
     </nav>
 </div>
 
 <section id="content">
     <article class="page">
+
+        <h1>Breezko</h1>
+        <h2>CSS3/Javascript concept for thumbnails previewing, images carousels, etc.</h2>
+
         <p>
-        <p>Also can be controlled with buttons</p>
-        <button class="btn" onclick='breezKo.next()'>next</button>
-        <button class="btn" onclick='breezKo.prev()'>prev</button>
+
+            <button class="btn" onclick='breezKo.start(500)'>play</button>
+
+            <button class="btn" onclick='breezKo.stop()'>stop</button>
+
+
+            <button class="btn" onclick='breezKo.prev()'>prev</button>
+
+            <button class="btn" onclick='breezKo.next()'>next</button>
         </p>
         <ul class="breeze" id="breeze" onclick='breezKo.next()'>
-            <li><img src="art/gap1.jpg" alt=""></li>
-            <li><img src="art/gap2.jpg" alt=""></li>
-            <li><img src="art/gap3.jpg" alt=""></li>
-            <li><img src="art/gap4.jpg" alt=""></li>
-            <li><img src="art/gap5.jpg" alt=""></li>
-            <li><img src="art/gap6.jpg" alt=""></li>
-            <li><img src="art/gap7.jpg" alt=""></li>
-            <li><img src="art/gap8.jpg" alt=""></li>
+            <li><img src="images/gap1.jpg" alt=""></li>
+            <li><img src="images/gap2.jpg" alt=""></li>
+            <li><img src="images/gap3.jpg" alt=""></li>
+            <li><img src="images/gap4.jpg" alt=""></li>
+            <li><img src="images/gap5.jpg" alt=""></li>
+            <li><img src="images/gap6.jpg" alt=""></li>
+            <li><img src="images/gap7.jpg" alt=""></li>
+            <li><img src="images/gap8.jpg" alt=""></li>
         </ul>
-
 
 
     </article>
@@ -62,7 +71,7 @@
     var container = document.getElementById('breeze');
     var breezKo = new window.Breezko(document.getElementById('breeze'), {
 //         delay: 3000
-        speed: 500
+        speed:500
     });
 
 

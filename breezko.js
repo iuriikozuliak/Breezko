@@ -15,9 +15,8 @@
     };
     var offloadFn = function (fn) {
         setTimeout(fn || noop, 0)
-    }; // offload a functions execution
+    }; // offload a callback execution
 
-    // check browser capabilities
     var browser = {
         addEventListener:!!window.addEventListener,
         touch:('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch,
@@ -267,6 +266,17 @@
         prev:function () {
 
             this._prev();
+
+        },
+
+        start:function (delay) {
+            this.options.delay = delay;
+            this._begin();
+
+        },
+
+        stop:function () {
+            this._stop();
 
         }
     }
