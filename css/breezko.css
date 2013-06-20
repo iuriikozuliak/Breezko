@@ -1,4 +1,4 @@
-/* line 6, ../sass/breezko.scss */
+/* line 3, ../sass/breezko.scss */
 .breeze {
   -webkit-perspective: 1400px;
   -moz-perspective: 1400px;
@@ -7,11 +7,12 @@
   perspective: 1400px;
   text-align: center;
   background: #f3f3f3;
-  width: 150px;
+  width: 200px;
+  height: 200px;
   position: relative;
 }
 
-/* line 15, ../sass/breezko.scss */
+/* line 13, ../sass/breezko.scss */
 .breeze li {
   -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
@@ -30,7 +31,7 @@
   background: #000;
 }
 
-/* line 29, ../sass/breezko.scss */
+/* line 27, ../sass/breezko.scss */
 .breeze li.active {
   display: block;
 }

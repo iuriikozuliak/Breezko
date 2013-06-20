@@ -45,15 +45,13 @@
     Breezko.prototype = {
         defaults:{
             speed:500,
-            startSlide:'',
-            auto:false,
             limits:{
-                'rotateX':0,
-                'rotateY':0,
-                'rotateZ':0,
-                'translateX':0,
-                'translateY':0,
-                'translateZ':0
+                'rotateX':[100, 100],
+                'rotateY':[-10, 10],
+                'rotateZ':[-10, 10],
+                'translateX':[-400, 400],
+                'translateY':[-300, 300],
+                'translateZ':[350, 500]
             }
         },
         _init:function () {
@@ -209,12 +207,13 @@
 
         _getTransform:function () {
             return {
-                rx:this._getRandom(100, 100),
-                ry:this._getRandom(-10, -10),
-                rz:this._getRandom(-10, 10),
-                tx:this._getRandom(-400, 400),
-                ty:this._getRandom(-300, 300),
-                tz:this._getRandom(350, 500)
+                rx:this._getRandom(this.options.limits.rotateX[0], this.options.limits.rotateX[1]),
+                ry:this._getRandom(this.options.limits.rotateY[0], this.options.limits.rotateY[1]),
+                rz:this._getRandom(this.options.limits.rotateZ[0], this.options.limits.rotateZ[1]),
+                tx:this._getRandom(this.options.limits.translateX[0], this.options.limits.translateX[1]),
+                ty:this._getRandom(this.options.limits.translateY[0], this.options.limits.translateY[1]),
+                tz:this._getRandom(this.options.limits.translateZ[0], this.options.limits.translateZ[1])
+
             }
         },
         _begin:function () {

@@ -13,7 +13,8 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/google-code-prettify/prettify.css">
+    <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/breezko.css">
     <!-- endbuild -->
 </head>
@@ -37,20 +38,14 @@
     <article class="page">
 
         <h1>Breezko</h1>
-        <h2>CSS3/Javascript concept for thumbnails previewing, images carousels, etc.</h2>
 
-        <p>
+        <h2 class="subheader border-bottom">CSS3/Javascript concept for thumbnails previewing, images carousels,
+            etc.
+        </h2>
 
-            <button class="btn" onclick='breezKo.start(500)'>play</button>
+        <br>
 
-            <button class="btn" onclick='breezKo.stop()'>stop</button>
-
-
-            <button class="btn" onclick='breezKo.prev()'>prev</button>
-
-            <button class="btn" onclick='breezKo.next()'>next</button>
-        </p>
-        <ul class="breeze" id="breeze" onclick='breezKo.next()'>
+        <ul class="breeze " id="container" onclick='breezKo.next()'>
             <li><img src="images/gap1.jpg" alt=""></li>
             <li><img src="images/gap2.jpg" alt=""></li>
             <li><img src="images/gap3.jpg" alt=""></li>
@@ -61,19 +56,99 @@
             <li><img src="images/gap8.jpg" alt=""></li>
         </ul>
 
+        <br>
+        <p>
+
+            <button class="btn" onclick='breezKo.start(500)'>play</button>
+
+            <button class="btn" onclick='breezKo.stop()'>stop</button>
+
+            <button class="btn" onclick='breezKo.prev()'>prev</button>
+
+            <button class="btn" onclick='breezKo.next()'>next</button>
+        </p>
+
+
+        <p>Breezko is library agnostic plugin, written with pure javascript, that allows previewing or navigation
+            through items using CSS3 transitions and transforms. Every next elements just flyes away out of screen, and
+            coming back in the next loop.
+            <br>
+            To set-up, it only needs to follow simple pattern:</p>
+
+<pre class="prettyprint linenums">
+ &lt;ul class="container" id="breeze" onclick='breezKo.next()'&gt;
+     &lt;li&gt;&lt;img src="images/pic.jpg" alt=""&gt;&lt;/li&gt;
+     &lt;li&gt;&lt;img src="images/pic.jpg" alt=""&gt;&lt;/li&gt;
+     ...
+     &lt;li&gt;&lt;img src="images/pic.jpg" alt=""&gt;&lt;/li&gt;
+ &lt;/ul&gt;
+</pre>
+
+        <p>
+            Above is the initial required structure – few elements wrapped with <code>ul</code>. Place any content
+            you want inside <code>li</code>. The container will need to be passed to the Breezko function like so:
+        </p>
+
+<pre class="prettyprint linenums">
+var breezKo = new window.Breezko(document.getElementById('breeze'));
+</pre>
+
+        <p>
+            Breezko function can take an optional second element - an object with key/value settings, with following options available:
+        </p>
+
+<pre class="prettyprint linenums">
+ defaults:{
+        // default transition speed in ms
+        speed:500,
+        // enables auto slideshow, and sets delay between animations
+        delay: 500,
+        // max and min values for rotation and translate options
+        limits:{
+            'rotateX':[100, 100],
+            'rotateY':[-10, 10],
+            'rotateZ':[-10, 10],
+            'translateX':[-400, 400],
+            'translateY':[-300, 300],
+            'translateZ':[350, 500]
+        }
+}
+</pre>
+
+        <p>Breezko API:</p>
+
+<pre class="prettyprint">
+    next()
+    prev()
+    start(delay)
+    stop()
+</pre>
+
+        <p>Sample usage:</p>
+
+        <br>
+        
+<pre class="prettyprint linenums">
+&lt;button class="btn" onclick='breezKo.start(500)'&gt;
+&lt;button class="btn" onclick='breezKo.stop()'&gt;
+&lt;button class="btn" onclick='breezKo.prev()'&gt;
+&lt;button class="btn" onclick='breezKo.next()'&gt;
+</pre>
+
 
     </article>
 </section>
 
-<script src='breezko.js'></script>
+<script type="text/javascript" src="js/breezko.js"></script>
+<script type="text/javascript" src="js/prettify.js"></script>
 <script>
-    // pure JS
-    var container = document.getElementById('breeze');
-    var breezKo = new window.Breezko(document.getElementById('breeze'), {
-//         delay: 3000
+
+    // basic init
+    var breezKo = new window.Breezko(document.getElementById('container'), {
         speed:500
     });
 
+    window.prettyPrint && prettyPrint()
 
 </script>
 </body>
